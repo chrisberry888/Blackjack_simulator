@@ -1,25 +1,5 @@
 from enum import Enum
-
-class Suit(Enum):
-    SPADES = 0
-    DIAMONDS = 1
-    CLUBS = 2
-    HEARTS = 3
-
-class Value(Enum):
-    TWO = 0
-    THREE = 1
-    FOUR = 2
-    FIVE = 3
-    SIX = 4
-    SEVEN = 5
-    EIGHT = 6
-    NINE = 7
-    TEN = 8
-    JACK = 9
-    QUEEN = 10
-    KING = 11
-    ACE = 12
+import random
 
 suit_dict = {
     0: 's', # Spades
@@ -51,14 +31,32 @@ class Card:
         self.suit = suit_dict.get(suit_number)
         self.value = value_dict.get(value_number)
 
+    def __repr__(self):
+        return f"{self.value}{self.suit}"
+
     def get_card_name(self):
         return (self.value + self.suit)
+    
         
 
 class Deck:
     def __init__(self):
-        self.deck = []
-        for i in range(52):
-            self.deck.append(Card((i % 4), (i % 13)))
+        self.deck = [Card(i, j) for i in range(4) for j in range(13)]
+
+    def shuffle(self):
+        random.shuffle(self.deck)
         
-        
+
+class Shoe:
+    def __init__(self, decks, penetration):
+        self.shoe = [Card(i, j) for i in range(4) for j in range(13) for k in range(decks)]
+        random.shuffle(self.shoe)
+        self.shoe.insert(penetration * 52, "CUTOFF")
+
+    def deal(self):
+        return self.shoe.pop()
+
+
+class Player:
+    def __init__(self) -> None:
+        pass
