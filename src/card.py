@@ -71,7 +71,7 @@ class Shoe:
     def __init__(self, decks, penetration):
         self.shoe = [Card(i, j) for i in range(4) for j in range(13) for k in range(decks)]
         random.shuffle(self.shoe)
-        self.shoe.insert(penetration * 52, Card.CUT_CARD)
+        self.shoe.insert(int(penetration * 52), Card.CUT_CARD)
         self.cards_in_discard_tray = 0
         self.past_cut_card = False
 
