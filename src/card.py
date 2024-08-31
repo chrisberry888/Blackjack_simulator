@@ -12,7 +12,7 @@ class Hand_Quality(Enum):
     HARD = 0
     SOFT = 1
     PAIR = 2
-
+    LOST = 3
 
 suit_dict = {
     0: 's', # Spades
@@ -66,16 +66,6 @@ class Card:
 
     def get_card_name(self):
         return (self.value + self.suit)
-    
-        
-
-class Deck:
-    def __init__(self):
-        self.deck = [Card(i, j) for i in range(4) for j in range(13)]
-
-    def shuffle(self):
-        random.shuffle(self.deck)
-        
 
 class Shoe:
     def __init__(self, decks, penetration):
@@ -83,51 +73,40 @@ class Shoe:
         random.shuffle(self.shoe)
         self.shoe.insert(penetration * 52, Card.CUT_CARD)
         self.cards_in_discard_tray = 0
+        self.past_cut_card = False
 
     def deal(self):
+        curr = self.shoe.pop()
+        if curr == Card.CUT_CARD:
+            self.past_cut_card = True
+            curr = self.shoe.pop()
         self.cards_in_discard_tray += 1
-        return self.shoe.pop()
-    
-class Hand:
-    def __init__(self):
-        self.hand = [Card()]
+        return curr
 
+class Hand: 
+    def __init__(self, card_1: Card, card_2: Card):
+        self.hand = [card_1, card_2]
+        self.hand_worth, self.hand_quality = self.calculate_hand_worth()
 
-class Player:
-    def __init__(self):
-        self.strategy = {
-            Hand_Quality.HARD : {},
-            Hand_Quality.SOFT : {},
-            Hand_Quality.PAIR : {}
-        }
+    def calculate_hand_worth(self):
+        worth = 0
+        hand_contains_ace = False
+        for card in self.hand:
+            worth += worth_dict.get(card.value)
+            if card.value == 'A':
+                hand_contains_ace = True
+        if len(self.hand) == 2 and self.hand[0].value == self.hand[1].value:
+            hand_quality = Hand_Quality.PAIR
+        elif worth <= 11 and hand_contains_ace:
+            worth += 10
+            hand_quality = Hand_Quality.SOFT
+        elif worth <= 21:
+            hand_quality = Hand_Quality.HARD
+        else:
+            hand_quality = Hand_Quality.LOST
+        return worth, hand_quality
         
-        for i in range(1, 11):
-            self.strategy[Hand_Quality.HARD][(21, i)] = Action.STAND
-            self.strategy[Hand_Quality.SOFT][(21, i)] = Action.STAND
-        
-        for i in range(20, 4, -1):
-            stats = {up_card : {
-                Action.STAND : 0,
-                Action.HIT : 0,
-                Action.DOUBLE : 0,
-                Action.SURRENDUR : 0
-            } for up_card in worth_dict.keys()}
+    def add_card(self, card: Card):
+        self.hand.append(card)
+        self.hand_worth, self.hand_quality = self.calculate_hand_worth()
 
-            possible_actions = [
-                Action.STAND,
-                Action.HIT,
-                Action.DOUBLE,
-                Action.SURRENDUR
-            ]
-
-            for shoe_num in range(10000):
-                current_shoe = Shoe(6, 1.5)
-                past_cut_card = False
-                while not past_cut_card:
-                    current_up_card = current_shoe.deal()
-                    if current_up_card 
-                    for action in possible_actions:
-
-
-
-            
